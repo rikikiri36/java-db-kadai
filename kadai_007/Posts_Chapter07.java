@@ -3,16 +3,16 @@ package kadai_007;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 
 public class Posts_Chapter07 {
 
 	public static void main(String[] args) {
         Connection con = null;
-        PreparedStatement statement = null;
+        Statement statement = null;
         Statement statement2 = null;
         
         String[][] postsList = {
@@ -35,22 +35,26 @@ public class Posts_Chapter07 {
             System.out.println("レコード追加を実行します");
 
             // ▼INSERT
-            String sql = "INSERT INTO posts (user_id, posted_at, post_content, likes) VALUES (?, ?, ?, ?);";
-            statement = con.prepareStatement(sql);
+            statement = con.createStatement();
+            String sql = "INSERT INTO posts (user_id, posted_at, post_content, likes) VALUES ";
 
-            int rowCnt = 0;
             for( int i = 0; i < postsList.length; i++ ) {
 
-            	statement.setString(1, postsList[i][0]); // ユーザーID
-                statement.setString(2, postsList[i][1]); // 投稿日時
-                statement.setString(3, postsList[i][2]); // 投稿内容
-                statement.setString(4, postsList[i][3]); // いいね数
+            	sql += "( '";
+            	sql += postsList[i][0] + "','" + postsList[i][1] + "','" + postsList[i][2] + "'," + postsList[i][3]; 
 
-                // クエリ実行
-                rowCnt = statement.executeUpdate();
+            	if(i < postsList.length-1) {
+            		sql += " ), "; }
+            	else {
+            		sql += " ) ";
+            	}
             }
 
-            System.out.println( postsList.length + "件のレコードが追加されました");
+        	System.out.println(sql);
+            // クエリ実行
+            int rowCnt = statement.executeUpdate(sql);
+
+            System.out.println( rowCnt + "件のレコードが追加されました");
 
             // ▼SELECT
             System.out.println( "ユーザーIDが1002のレコードを検索しました");
